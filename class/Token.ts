@@ -7,6 +7,8 @@ export default class Token {
     contract: ethers.Contract;
 
     address: string;
+    symbol: string = 'UNDF';
+    decimals: number = 18;
 
     constructor(provider: JsonRpcProvider, address: string) {
         this.provider = provider;
@@ -14,31 +16,21 @@ export default class Token {
         this.address = address;
     }
 
+    async initialize() {
+        this.symbol = await this.contract.symbol();
+        this.decimals = await this.contract.decimals();
+    }
+
     async approve(spender: string, amount: string) {
         await this.contract.approve(spender, amount);
     }
 
-    async getBalance(address: string): Promise<bigint> {
-        return await this.contract.balanceOf(address);
+    async getBalance(address: string): Promise<number> {
+        const balance: bigint = await this.contract.balanceOf(address);
+        return parseFloat(ethers.formatUnits(balance, this.decimals));
     }
 
-    async symbol(): Promise<string> {
-        try {
-            return await this.contract.symbol();
-        } catch (error) {
-            return 'UNDF';
-        }
-    }
-
-    async decimals(): Promise<number> {
-        try {
-            return await this.contract.decimals();
-        } catch (error) {
-            return 18;
-        }
-    }
-
-    async getMarketCap(): Promise<bigint> {
+    async getMarketCap(): Promise<number> {
         const totalSupply: bigint = await this.contract.totalSupply();
 
         const contractAddress = await this.contract.getAddress();
@@ -47,20 +39,23 @@ export default class Token {
         const burnt: bigint = await this.contract.balanceOf(ZeroAddress);
 
         const marketCap = totalSupply - burnt - contractBalance;
-        return ethers.parseUnits(marketCap.toString(), await this.decimals());
+
+        const formated = ethers.formatUnits(marketCap, this.decimals);
+        return parseFloat(formated);
     }
 
-    async getTokensVolumeLastHour(): Promise<bigint> {
+    async getVolumeLastHour(): Promise<number> {
         const toBlock = await this.provider.getBlockNumber();
 
         const events = await this.contract.queryFilter('Transfer', toBlock - 300, toBlock);
 
-        let totalTokens = BigInt(0);
+        let totalTokens: bigint = BigInt(0);
         for (const event of events) {
             const amount = BigInt(event.topics[2]);
             totalTokens += amount;
         }
 
-        return totalTokens / BigInt(await this.decimals());
+        const formated = ethers.formatUnits(totalTokens, this.decimals);
+        return parseFloat(formated);
     }
 }
