@@ -5,11 +5,13 @@ import ERC20 from '../ABI/Token/ERC-20.json';
 export default class Token {
     contract: ethers.Contract;
 
+    address: string;
     symbol: string = 'UNDEFINED';
     decimals: number = 18;
 
     constructor(provider: JsonRpcProvider, address: string) {
         this.contract = new ethers.Contract(address, ERC20, provider);
+        this.address = address;
 
         this.contract.symbol().then((symbol) => {
             this.symbol = symbol;
@@ -30,5 +32,9 @@ export default class Token {
 
         const marketCap = totalSupply - burnt - contractBalance;
         return ethers.parseUnits(marketCap.toString(), this.decimals);
+    }
+
+    async approve(spender: string, amount: string) {
+        await this.contract.approve(spender, amount);
     }
 }
