@@ -10,6 +10,8 @@ import calculateAmounts from '../utils/calculate-amount-out';
 import Pool from './Pool';
 import Token from './Token';
 
+import { Version, Action } from '../enum';
+
 export default class Router {
     provider: JsonRpcProvider;
 
