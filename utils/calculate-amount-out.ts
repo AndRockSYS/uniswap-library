@@ -1,4 +1,4 @@
-import Pool from '../classes/Pool';
+import Pool from '../class/Pool';
 
 export default async function calculateAmounts(
     { action, amountIn, token }: SwapRequest,
