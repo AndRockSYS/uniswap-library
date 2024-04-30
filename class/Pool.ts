@@ -48,11 +48,13 @@ export default class Pool {
     }
 
     async getPrice(action: Action, token: Token): Promise<number> {
+        const tokenDecimals = await token.decimals();
+
         if (this.version == Version.V2) {
             const [reserve0, reserve1, _timestamp]: bigint[] = await this.contract.getReserves();
 
             const WETHReserve = reserve1 * ethers.parseEther('1');
-            const tokenReserve = reserve0 * BigInt(10) ** BigInt(token.decimals);
+            const tokenReserve = reserve0 * BigInt(10) ** BigInt(tokenDecimals);
 
             return action == Action.Buy
                 ? Number(WETHReserve / tokenReserve)
@@ -61,7 +63,7 @@ export default class Pool {
             const info = await this.contract.slot0();
             const token0 = await this.contract.token0();
 
-            let price = (info.sqrtPriceX96 / 2 ** 96) ** 2 / 10 ** (18 - token.decimals);
+            let price = (info.sqrtPriceX96 / 2 ** 96) ** 2 / 10 ** (18 - tokenDecimals);
             //handle if the token pair was set in a wrong way
             if (token0 == token.address) price = 1 / price;
 
