@@ -7,21 +7,11 @@ export default class Token {
     contract: ethers.Contract;
 
     address: string;
-    symbol: string = 'UNDEFINED';
-    decimals: number = 18;
 
     constructor(provider: JsonRpcProvider, address: string) {
         this.provider = provider;
         this.contract = new ethers.Contract(address, ERC20, provider);
         this.address = address;
-
-        this.contract.symbol().then((symbol) => {
-            this.symbol = symbol;
-        });
-
-        this.contract.decimals().then((decimals) => {
-            this.decimals = decimals;
-        });
     }
 
     async approve(spender: string, amount: string) {
@@ -30,6 +20,22 @@ export default class Token {
 
     async getBalance(address: string): Promise<bigint> {
         return await this.contract.balanceOf(address);
+    }
+
+    async symbol(): Promise<string> {
+        try {
+            return await this.contract.symbol();
+        } catch (error) {
+            return 'UNDF';
+        }
+    }
+
+    async decimals(): Promise<number> {
+        try {
+            return await this.contract.decimals();
+        } catch (error) {
+            return 18;
+        }
     }
 
     async getMarketCap(): Promise<bigint> {
@@ -41,7 +47,7 @@ export default class Token {
         const burnt: bigint = await this.contract.balanceOf(ZeroAddress);
 
         const marketCap = totalSupply - burnt - contractBalance;
-        return ethers.parseUnits(marketCap.toString(), this.decimals);
+        return ethers.parseUnits(marketCap.toString(), await this.decimals());
     }
 
     async getTokensVolumeLastHour(): Promise<bigint> {
@@ -53,10 +59,8 @@ export default class Token {
         for (const event of events) {
             const amount = BigInt(event.topics[2]);
             totalTokens += amount;
-            console.log(amount);
-            console.log(event);
         }
 
-        return totalTokens;
+        return totalTokens / BigInt(await this.decimals());
     }
 }
