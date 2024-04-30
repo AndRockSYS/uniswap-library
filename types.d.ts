@@ -1,13 +1,3 @@
-enum Version {
-    V2,
-    V3,
-}
-
-enum Action {
-    Buy,
-    Sell,
-}
-
 type SwapRequest = {
     action: Action;
     amountIn: number;
