@@ -1,4 +1,4 @@
-function convertPrice(price: number): string {
+export function convertPrice(price: number): string {
     return price <= 1e-19
         ? (price / 1e-19).toFixed(4) + '*10⁻¹⁹'
         : price <= 1e-16
@@ -16,7 +16,7 @@ function convertPrice(price: number): string {
         : price.toFixed(4);
 }
 
-function convertAmount(amount: number): string {
+export function convertAmount(amount: number): string {
     return amount >= 1e9
         ? (amount / 1e9).toFixed(2) + 'B'
         : amount >= 1e6
@@ -25,8 +25,3 @@ function convertAmount(amount: number): string {
         ? (amount / 1e3).toFixed(2) + 'K'
         : amount.toFixed(4);
 }
-
-export default {
-    convertPrice,
-    convertAmount,
-};
