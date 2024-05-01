@@ -1,6 +1,6 @@
 import { ethers, JsonRpcProvider, ZeroAddress } from 'ethers';
 
-import ERC20 from '../ABI/Token/ERC-20.json';
+import ERC20 from 'abi/Token/ERC-20.json';
 
 export default class Token {
     provider: JsonRpcProvider;

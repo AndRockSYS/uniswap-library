@@ -1,16 +1,17 @@
 import { Contract, ethers, JsonRpcProvider } from 'ethers';
 
-import { ROUTER_V2, ROUTER_V3, WETH, USDT } from '../addresses.json';
+import { SwapRequest, ExactInputSingleParams } from 'swap-types';
+import { Action, Version } from 'enum-types';
 
-import RouterV2ABI from '../ABI/UniswapV2/Router.json';
-import RouterV3ABI from '../ABI/UniswapV3/Router.json';
+import Pool from 'class/Pool';
+import Token from 'class/Token';
 
-import calculateAmounts from '../utils/calculate-amount-out';
+import { ROUTER_V2, ROUTER_V3, WETH, USDT } from 'addresses';
 
-import Pool from './Pool';
-import Token from './Token';
+import RouterV2ABI from 'abi/UniswapV2/Router.json';
+import RouterV3ABI from 'abi/UniswapV3/Router.json';
 
-import { Version, Action } from '../enum';
+import { calculateAmounts } from 'utils';
 
 export default class Router {
     provider: JsonRpcProvider;

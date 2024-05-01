@@ -1,16 +1,15 @@
 import { AddressLike, Contract, ethers, JsonRpcProvider, ZeroAddress } from 'ethers';
 
-import Token from './Token';
+import { Version, Action } from 'enum-types';
 
-import { FACTORY_V2, FACTORY_V3, WETH } from '../addresses.json';
+import Token from 'class/Token';
 
-import PairABI from '../ABI/UniswapV2/Pair.json';
-import PoolABI from '../ABI/UniswapV3/Pool.json';
+import { FACTORY_V2, FACTORY_V3, WETH } from 'addresses';
 
-import FactoryV2 from '../ABI/UniswapV2/Factory.json';
-import FactoryV3 from '../ABI/UniswapV3/Factory.json';
-
-import { Version, Action } from '../enum';
+import PairABI from 'abi/UniswapV2/Pair.json';
+import PoolABI from 'abi/UniswapV3/Pool.json';
+import FactoryV2ABI from 'abi/UniswapV2/Factory.json';
+import FactoryV3ABI from 'abi/UniswapV3/Factory.json';
 
 export default class Pool {
     provider: JsonRpcProvider;
@@ -27,11 +26,11 @@ export default class Pool {
     }
 
     async initialize() {
-        let factory = new Contract(FACTORY_V2, FactoryV2, this.provider);
+        let factory = new Contract(FACTORY_V2, FactoryV2ABI, this.provider);
         let poolAddress = await factory.getPair(this.tokenAddress, WETH);
 
         if (poolAddress == ZeroAddress) {
-            factory = new Contract(FACTORY_V3, FactoryV3, this.provider);
+            factory = new Contract(FACTORY_V3, FactoryV3ABI, this.provider);
             poolAddress = await factory.getPool(this.tokenAddress, WETH, 3000);
             this.version = Version.V3;
         }
