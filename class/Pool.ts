@@ -16,7 +16,7 @@ export default class Pool {
 
     address: string = ZeroAddress;
     contract: Contract = new Contract(ZeroAddress, PairABI);
-    version: Version = Version.V2;
+    version: Version = Version.V3;
 
     tokenAddress: AddressLike;
 
@@ -26,20 +26,20 @@ export default class Pool {
     }
 
     async initialize() {
-        let factory = new Contract(FACTORY_V2, FactoryV2ABI, this.provider);
-        let poolAddress = await factory.getPair(this.tokenAddress, WETH);
+        let factory = new Contract(FACTORY_V3, FactoryV3ABI, this.provider);
+        let poolAddress = await factory.getPool(this.tokenAddress, WETH, 3000);
 
         if (poolAddress == ZeroAddress) {
-            factory = new Contract(FACTORY_V3, FactoryV3ABI, this.provider);
-            poolAddress = await factory.getPool(this.tokenAddress, WETH, 3000);
-            this.version = Version.V3;
+            factory = new Contract(FACTORY_V2, FactoryV2ABI, this.provider);
+            poolAddress = await factory.getPair(this.tokenAddress, WETH);
+            this.version = Version.V2;
         }
 
         this.address = poolAddress;
 
         this.contract = new Contract(
             this.address,
-            this.version == Version.V2 ? PairABI : PoolABI,
+            this.version == Version.V3 ? PoolABI : PairABI,
             this.provider
         );
     }
@@ -54,6 +54,7 @@ export default class Pool {
             return action == Action.Buy ? WETHRes / tokenRes : tokenRes / WETHRes;
         } else {
             const info = await this.contract.slot0();
+            console.log(info);
             const token0 = await this.contract.token0();
 
             let price = (info.sqrtPriceX96 / 2 ** 96) ** 2 / 10 ** (18 - token.decimals);
