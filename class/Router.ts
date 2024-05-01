@@ -25,13 +25,13 @@ export default class Router {
         this.routerV3 = new Contract(ROUTER_V3, RouterV3ABI, provider);
     }
 
-    async getWETHPrice(): Promise<bigint> {
+    async getWETHPrice(): Promise<number> {
         const amounts: bigint[] = await this.routerV2.getAmountsOut(ethers.parseEther('1'), [
             WETH,
             USDT,
         ]);
 
-        return BigInt(ethers.formatUnits(amounts[1], 6));
+        return parseFloat(ethers.formatUnits(amounts[1], 6));
     }
 
     async swapTokensForWETH(request: SwapRequest, pool: Pool, sender: string) {
