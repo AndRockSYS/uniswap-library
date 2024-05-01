@@ -17,7 +17,10 @@ export default class Token {
     }
 
     async initialize() {
-        this.symbol = await this.contract.symbol();
+        try {
+            this.symbol = await this.contract.symbol();
+        } catch (error) {}
+
         this.decimals = Number(await this.contract.decimals());
     }
 
