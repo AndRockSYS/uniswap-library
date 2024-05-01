@@ -18,7 +18,7 @@ export default class Token {
 
     async initialize() {
         this.symbol = await this.contract.symbol();
-        this.decimals = await this.contract.decimals();
+        this.decimals = Number(await this.contract.decimals());
     }
 
     async approve(spender: string, amount: string) {
