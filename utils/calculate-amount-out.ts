@@ -1,4 +1,7 @@
-import Pool from '../class/Pool';
+import { SwapRequest } from 'swap-types';
+import { Action } from 'enum-types';
+
+import Pool from 'class/Pool';
 
 export default async function calculateAmounts(
     { action, amountIn, token }: SwapRequest,
