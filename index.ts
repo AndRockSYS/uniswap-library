@@ -2,11 +2,13 @@ import { Telegraf } from 'telegraf';
 import { ethers, HDNodeWallet, JsonRpcProvider, Wallet } from 'ethers';
 import dotenv from 'dotenv';
 
-import Token from './class/Token';
-import Pool from './class/Pool';
-import { Action } from './enum';
+import { Action } from 'enum-types';
 
-import { convertPrice, convertAmount } from './utils/convert-numbers';
+import Token from 'class/Token';
+import Pool from 'class/Pool';
+import Router from 'class/Router';
+
+import { convertPrice, convertAmount } from 'utils';
 
 dotenv.config();
 
@@ -41,6 +43,14 @@ bot.hears(privateKey, async (ctx) => {
 
     wallet = new Wallet(ctx.message.text);
     ctx.sendMessage(`Your Address: \n\`${wallet.address}\``, { parse_mode: 'MarkdownV2' });
+});
+
+bot.command('/ether', async (ctx) => {
+    const router = new Router(provider);
+
+    const price = await router.getWETHPrice();
+
+    ctx.sendMessage(price.toString());
 });
 
 bot.hears(address, async (ctx) => {
