@@ -66,14 +66,20 @@ bot.hears(address, async (ctx) => {
         return;
     }
 
+    const router = new Router(provider);
+
     const price = await pool.getPrice(Action.Buy, token);
+    const WETHPrice = await router.getWETHPrice();
+
     const balance = wallet ? await token.getBalance(wallet.address) : 0;
     const marketCap = await token.getMarketCap();
     const volume = await token.getVolumeLastHour();
 
+    console.log(token.decimals);
+
     ctx.sendMessage(
         `Token - ${token.symbol} 
-		\n${convertPrice(price)} WETH/${token.symbol} 
+		\n${convertPrice(price * WETHPrice)} USDT/${token.symbol} 
 		\nMCap - ${convertAmount(marketCap)}
 		\nLast Hour - ${volume}
 		\nBalance - ${convertAmount(balance)} ${token.symbol}`
