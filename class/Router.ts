@@ -40,7 +40,7 @@ export default class Router {
         const deadline = Date.now() + 30_000;
         const [amountIn, amountOut] = await calculateAmounts(request, pool);
 
-        if (request.action == Action.Sell) await token.approve(pool.address, amountIn);
+        // if (request.action == Action.Sell) await token.approve(pool.address, amountIn);
 
         if (pool.version == Version.V2) {
             request.action == Action.Buy
