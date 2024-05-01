@@ -20,7 +20,7 @@ let wallet: HDNodeWallet | Wallet;
 const privateKey = /(0x.{64})/m;
 const address = /(0x.{40})/gm;
 
-// todo: check approve, check swap, check V3 price
+// todo: check approve, check swap
 
 bot.start((ctx) => {
     ctx.sendMessage('Welcome to the trading bot! \nProvide a private key or generate a new one.', {
@@ -43,7 +43,7 @@ bot.action('generator', async (ctx) => {
 bot.hears(privateKey, async (ctx) => {
     if (!wallet) return;
 
-    wallet = new Wallet(ctx.message.text);
+    wallet = new Wallet(ctx.message.text, provider);
     ctx.sendMessage(`Your Address: \n\`${wallet.address}\``, { parse_mode: 'MarkdownV2' });
 });
 
@@ -75,8 +75,6 @@ bot.hears(address, async (ctx) => {
     const marketCap = await token.getMarketCap();
     const volume = await token.getVolumeLastHour();
 
-    console.log(token.decimals);
-
     ctx.sendMessage(
         `Token - ${token.symbol} 
 		\n${convertPrice(price * WETHPrice)} USDT/${token.symbol} 
@@ -84,6 +82,10 @@ bot.hears(address, async (ctx) => {
 		\nLast Hour - ${volume}
 		\nBalance - ${convertAmount(balance)} ${token.symbol}`
     );
+});
+
+bot.catch((err, ctx) => {
+    ctx.sendMessage(`An error occured \n${err}`);
 });
 
 bot.launch();
