@@ -45,7 +45,7 @@ bot.hears(privateKey, async (ctx) => {
     ctx.sendMessage(`Your Address: \n\`${wallet.address}\``, { parse_mode: 'MarkdownV2' });
 });
 
-bot.command('/ether', async (ctx) => {
+bot.command('ether', async (ctx) => {
     const router = new Router(provider);
 
     const price = await router.getWETHPrice();

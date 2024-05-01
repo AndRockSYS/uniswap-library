@@ -1,7 +1,6 @@
 import { Contract, ethers, JsonRpcProvider } from 'ethers';
 
-import { SwapRequest, ExactInputSingleParams } from 'types';
-import { Action, Version } from 'types';
+import { Action, Version, SwapRequest, ExactInputSingleParams } from 'types';
 
 import Pool from 'class/Pool';
 import Token from 'class/Token';

@@ -1,5 +1,3 @@
-import Token from 'class/Token';
-
 enum Version {
     V2,
     V3,
@@ -9,6 +7,8 @@ enum Action {
     Buy,
     Sell,
 }
+
+import Token from 'class/Token';
 
 type SwapRequest = {
     action: Action;
@@ -27,4 +27,4 @@ type ExactInputSingleParams = {
     sqrtPriceLimitX96: number;
 };
 
-export { Version, Action, SwapRequest, ExactInputSingleParams };
+export { Action, Version, SwapRequest, ExactInputSingleParams };
