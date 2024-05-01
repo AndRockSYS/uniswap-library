@@ -2,11 +2,11 @@ import { Telegraf } from 'telegraf';
 import { ethers, HDNodeWallet, JsonRpcProvider, Wallet } from 'ethers';
 import dotenv from 'dotenv';
 
-import { Action } from 'enum-types';
-
 import Token from 'class/Token';
 import Pool from 'class/Pool';
 import Router from 'class/Router';
+
+import { Action } from 'types';
 
 import { convertPrice, convertAmount } from 'utils';
 

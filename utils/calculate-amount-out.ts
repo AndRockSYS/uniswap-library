@@ -1,5 +1,5 @@
-import { SwapRequest } from 'swap-types';
-import { Action } from 'enum-types';
+import { SwapRequest } from 'swap';
+import { Action } from 'enum';
 
 import Pool from 'class/Pool';
 

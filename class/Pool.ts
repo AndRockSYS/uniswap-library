@@ -1,15 +1,15 @@
 import { AddressLike, Contract, ethers, JsonRpcProvider, ZeroAddress } from 'ethers';
 
-import { Version, Action } from 'enum-types';
+import { Version, Action } from 'types';
 
 import Token from 'class/Token';
 
 import { FACTORY_V2, FACTORY_V3, WETH } from 'addresses';
 
-import PairABI from 'abi/UniswapV2/Pair.json';
-import PoolABI from 'abi/UniswapV3/Pool.json';
-import FactoryV2ABI from 'abi/UniswapV2/Factory.json';
-import FactoryV3ABI from 'abi/UniswapV3/Factory.json';
+import PairABI from 'ABI/UniswapV2/Pair.json';
+import PoolABI from 'ABI/UniswapV3/Pool.json';
+import FactoryV2ABI from 'ABI/UniswapV2/Factory.json';
+import FactoryV3ABI from 'ABI/UniswapV3/Factory.json';
 
 export default class Pool {
     provider: JsonRpcProvider;
