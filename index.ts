@@ -20,6 +20,8 @@ let wallet: HDNodeWallet | Wallet;
 const privateKey = /(0x.{64})/m;
 const address = /(0x.{40})/gm;
 
+// todo: check approve, check swap, check V3 price
+
 bot.start((ctx) => {
     ctx.sendMessage('Welcome to the trading bot! \nProvide a private key or generate a new one.', {
         reply_markup: {
@@ -47,10 +49,9 @@ bot.hears(privateKey, async (ctx) => {
 
 bot.command('ether', async (ctx) => {
     const router = new Router(provider);
-
     const price = await router.getWETHPrice();
 
-    ctx.sendMessage(price.toString());
+    ctx.sendMessage(`ETH price - ${price.toFixed(2)}`);
 });
 
 bot.hears(address, async (ctx) => {
