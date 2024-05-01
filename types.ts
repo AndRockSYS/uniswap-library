@@ -27,4 +27,14 @@ type ExactInputSingleParams = {
     sqrtPriceLimitX96: number;
 };
 
-export { Action, Version, SwapRequest, ExactInputSingleParams };
+type Slot0 = {
+    sqrtPriceX96: bigint;
+    tick: bigint;
+    observationIndex: bigint;
+    observationCardinality: bigint;
+    observationCardinalityNext: bigint;
+    feeProtocol: bigint;
+    unlocked: boolean;
+};
+
+export { Action, Version, SwapRequest, ExactInputSingleParams, Slot0 };
