@@ -1,3 +1,5 @@
+import Token from 'class/Token';
+
 enum Version {
     V2,
     V3,
@@ -7,8 +9,6 @@ enum Action {
     Buy,
     Sell,
 }
-
-import Token from 'class/Token';
 
 type SwapRequest = {
     action: Action;
