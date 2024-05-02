@@ -68,12 +68,25 @@ bot.hears(address, async (ctx) => {
     const marketCap = await token.getMarketCap();
     const volume = await token.getVolumeLastHour();
 
+    const walletBalance = wallet ? Number(await provider.getBalance(wallet.address)) : 0;
+
     ctx.sendMessage(
         `Token - ${token.symbol} 
 		\n${convertPrice(tokenPrice * ETHPrice)} USDT/${token.symbol} 
 		\nMCap - ${convertAmount(marketCap)}
 		\nLast Hour - ${volume}
-		\nBalance - ${convertAmount(balance)} ${token.symbol}`
+		\nBalance - ${convertAmount(balance)} ${token.symbol}
+		${walletBalance > 0 ? '' : '\nFund your wallet to Buy / Sell tokens'}`,
+        walletBalance > 0
+            ? {
+                  reply_markup: {
+                      inline_keyboard: [
+                          [{ text: 'Buy', callback_data: 'buy' }],
+                          balance > 0 ? [{ text: 'Sell', callback_data: 'sell' }] : [],
+                      ],
+                  },
+              }
+            : {}
     );
 });
 
