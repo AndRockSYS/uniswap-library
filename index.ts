@@ -34,7 +34,7 @@ bot.action('generator', async (ctx) => {
 
     wallet = Wallet.createRandom(provider);
     ctx.sendMessage(
-        `Your Address: \n\`${wallet.address}\` \nPrivate Key \n\`${wallet.privateKey}\``,
+        `Your Address \n\`${wallet.address}\` \nPrivate Key \n\`${wallet.privateKey}\``,
         { parse_mode: 'MarkdownV2' }
     );
 });
@@ -59,7 +59,7 @@ bot.hears(address, async (ctx) => {
     await pool.setPoolVersion();
 
     if (pool.address == ethers.ZeroAddress) {
-        ctx.sendMessage('The bot cannot support this token');
+        ctx.sendMessage('The bot does not support this token');
         return;
     }
 
