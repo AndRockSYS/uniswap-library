@@ -53,10 +53,10 @@ bot.command('ether', async (ctx) => {
 
 bot.hears(address, async (ctx) => {
     const token = new Token(provider, ctx.message.text);
-    await token.initialize();
+    await token.setTokenInfo();
 
     const pool = new Pool(provider, ctx.message.text);
-    await pool.initialize();
+    await pool.setPoolVersion();
 
     if (pool.address == ethers.ZeroAddress) {
         ctx.sendMessage('The bot cannot support this token');

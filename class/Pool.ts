@@ -25,7 +25,7 @@ export default class Pool {
         this.tokenAddress = tokenAddress;
     }
 
-    async initialize() {
+    async setPoolVersion() {
         let factory = new Contract(FACTORY_V3, FactoryV3ABI, this.provider);
         let poolAddress = await factory.getPool(this.tokenAddress, WETH, 3000);
 

@@ -18,7 +18,7 @@ export default class Token {
         this.address = address;
     }
 
-    async initialize() {
+    async setTokenInfo() {
         try {
             this.symbol = await this.contract.symbol();
         } catch (error) {}

@@ -8,11 +8,11 @@ import { Action } from 'types';
 import { USDT } from 'addresses';
 
 export default async function getETHPrice(provider: JsonRpcProvider): Promise<number> {
-    const token2 = new Token(provider, USDT);
-    await token2.initialize();
+    const USDTToken = new Token(provider, USDT);
+    await USDTToken.setTokenInfo();
 
-    const pool2 = new Pool(provider, USDT);
-    await pool2.initialize();
+    const USDTPool = new Pool(provider, USDT);
+    await USDTPool.setPoolVersion();
 
-    return await pool2.getPrice(Action.Buy, token2);
+    return await USDTPool.getPrice(Action.Buy, USDTToken);
 }
