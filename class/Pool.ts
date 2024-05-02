@@ -4,7 +4,7 @@ import { Version, Action, Slot0 } from 'types';
 
 import Token from 'class/Token';
 
-import { FACTORY_V2, FACTORY_V3, WETH } from 'addresses';
+import { FACTORY_V2, FACTORY_V3, WETH, USDT } from 'addresses';
 
 import PairABI from 'ABI/UniswapV2/Pair.json';
 import PoolABI from 'ABI/UniswapV3/Pool.json';
@@ -45,6 +45,7 @@ export default class Pool {
     }
 
     async getPrice(action: Action, token: Token): Promise<number> {
+        console.log(token.decimals, this.version);
         if (this.version == Version.V2) {
             const [reserve0, reserve1, _timestamp]: bigint[] = await this.contract.getReserves();
 
@@ -55,12 +56,14 @@ export default class Pool {
         } else {
             const slot0: Slot0 = await this.contract.slot0();
             const token0 = await this.contract.token0();
+            console.log(token0);
 
-            let price =
-                (parseInt(slot0.sqrtPriceX96.toString()) / Math.pow(2, 96)) ** 2 /
-                Math.pow(10, 18 - token.decimals);
-            //handle if the token pair was set in a wrong way
-            if (token0 == token.address) price = 1 / price;
+            let price = (parseInt(slot0.sqrtPriceX96.toString()) / Math.pow(2, 96)) ** 2;
+
+            if (token.address == USDT) price *= Math.pow(10, 18 - token.decimals);
+            else price /= Math.pow(10, 18 - token.decimals);
+
+            if (token0 == WETH && token.address != USDT) price = 1 / price;
 
             return action == Action.Buy ? price : 1 / price;
         }
