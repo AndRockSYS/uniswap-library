@@ -90,6 +90,10 @@ bot.hears(address, async (ctx) => {
     );
 });
 
+bot.action(['buy', 'sell'], async (ctx) => {
+    //todo add buy / sell specific amount of tokens
+});
+
 bot.command('ether', async (ctx) => {
     const price = await getETHPrice(provider);
     ctx.sendMessage(`ETH price - ${price.toFixed(2)}`);
