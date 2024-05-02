@@ -48,36 +48,6 @@ bot.hears(privateKey, async (ctx) => {
     ctx.sendMessage(`Your Address: \n\`${wallet.address}\``, { parse_mode: 'MarkdownV2' });
 });
 
-bot.command('ether', async (ctx) => {
-    const price = await getETHPrice(provider);
-    ctx.sendMessage(`ETH price - ${price.toFixed(2)}`);
-});
-
-bot.command('balance', async (ctx) => {
-    if (!wallet) {
-        ctx.sendMessage(`You dont have an account`, {
-            reply_markup: {
-                inline_keyboard: [[{ text: 'Create new wallet', callback_data: 'generator' }]],
-            },
-        });
-        return;
-    }
-    const WETHToken = new Token(provider, WETH);
-    await WETHToken.setTokenInfo();
-
-    const balance = await WETHToken.getBalance(wallet.address);
-
-    ctx.sendMessage(`Your balance \n${balance} WETH`, {
-        reply_markup: {
-            inline_keyboard: [[{ text: 'Convert to ETH', callback_data: 'convert-to-eth' }]],
-        },
-    });
-});
-
-bot.action('convert-to-ether', async (ctx) => {
-    //todo add convert to ether to the address
-});
-
 bot.hears(address, async (ctx) => {
     const token = new Token(provider, ctx.message.text);
     await token.setTokenInfo();
@@ -104,6 +74,37 @@ bot.hears(address, async (ctx) => {
 		\nLast Hour - ${volume}
 		\nBalance - ${convertAmount(balance)} ${token.symbol}`
     );
+});
+
+bot.command('ether', async (ctx) => {
+    const price = await getETHPrice(provider);
+    ctx.sendMessage(`ETH price - ${price.toFixed(2)}`);
+});
+
+bot.command('balance', async (ctx) => {
+    if (!wallet) {
+        ctx.sendMessage(`You dont have an account`, {
+            reply_markup: {
+                inline_keyboard: [[{ text: 'Create new wallet', callback_data: 'generator' }]],
+            },
+        });
+        return;
+    }
+
+    const WETHToken = new Token(provider, WETH);
+    await WETHToken.setTokenInfo();
+
+    const balance = await WETHToken.getBalance(wallet.address);
+
+    ctx.sendMessage(`Your balance \n${balance} WETH`, {
+        reply_markup: {
+            inline_keyboard: [[{ text: 'Convert to ETH', callback_data: 'convert-to-eth' }]],
+        },
+    });
+});
+
+bot.action('convert-to-ether', async (ctx) => {
+    //todo add convert to ether to the address
 });
 
 bot.catch((err, ctx) => {
