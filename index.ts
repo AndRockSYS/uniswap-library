@@ -9,6 +9,8 @@ import { Action } from 'types';
 
 import { convertPrice, convertAmount, getETHPrice } from 'utils';
 
+import { WETH } from 'addresses';
+
 dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_API as string);
@@ -49,6 +51,31 @@ bot.hears(privateKey, async (ctx) => {
 bot.command('ether', async (ctx) => {
     const price = await getETHPrice(provider);
     ctx.sendMessage(`ETH price - ${price.toFixed(2)}`);
+});
+
+bot.command('balance', async (ctx) => {
+    if (!wallet) {
+        ctx.sendMessage(`You dont have an account`, {
+            reply_markup: {
+                inline_keyboard: [[{ text: 'Create new wallet', callback_data: 'generator' }]],
+            },
+        });
+        return;
+    }
+    const WETHToken = new Token(provider, WETH);
+    await WETHToken.setTokenInfo();
+
+    const balance = await WETHToken.getBalance(wallet.address);
+
+    ctx.sendMessage(`Your balance \n${balance} WETH`, {
+        reply_markup: {
+            inline_keyboard: [[{ text: 'Convert to ETH', callback_data: 'convert-to-eth' }]],
+        },
+    });
+});
+
+bot.action('convert-to-ether', async (ctx) => {
+    //todo add convert to ether to the address
 });
 
 bot.hears(address, async (ctx) => {
