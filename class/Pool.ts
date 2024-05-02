@@ -1,4 +1,12 @@
-import { AddressLike, Contract, ethers, JsonRpcProvider, ZeroAddress } from 'ethers';
+import {
+    AddressLike,
+    Contract,
+    ethers,
+    HDNodeWallet,
+    JsonRpcProvider,
+    Wallet,
+    ZeroAddress,
+} from 'ethers';
 
 import { Version, Action, Slot0 } from 'types';
 
@@ -10,6 +18,8 @@ import PairABI from 'ABI/UniswapV2/Pair.json';
 import PoolABI from 'ABI/UniswapV3/Pool.json';
 import FactoryV2ABI from 'ABI/UniswapV2/Factory.json';
 import FactoryV3ABI from 'ABI/UniswapV3/Factory.json';
+
+import { createTransaction } from 'utils';
 
 export default class Pool {
     provider: JsonRpcProvider;
@@ -65,5 +75,18 @@ export default class Pool {
 
             return action == Action.Buy ? price : 1 / price;
         }
+    }
+
+    async swap(wallet: HDNodeWallet | Wallet, action: Action, amountIn: bigint, amountOut: bigint) {
+        const isBuy = action == Action.Buy;
+
+        const args =
+            this.version == Version.V2
+                ? [isBuy ? amountOut : 0, !isBuy ? amountOut : 0, wallet.address, '']
+                : [wallet.address, !isBuy, amountIn, 0, ''];
+
+        const tx = await createTransaction(PairABI, this.contract, 'swap', args, wallet.address);
+
+        await wallet.sendTransaction(tx);
     }
 }
