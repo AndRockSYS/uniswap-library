@@ -4,11 +4,10 @@ import dotenv from 'dotenv';
 
 import Token from 'class/Token';
 import Pool from 'class/Pool';
-import Router from 'class/Router';
 
 import { Action } from 'types';
 
-import { convertPrice, convertAmount } from 'utils';
+import { convertPrice, convertAmount, getETHPrice } from 'utils';
 
 dotenv.config();
 
@@ -48,9 +47,7 @@ bot.hears(privateKey, async (ctx) => {
 });
 
 bot.command('ether', async (ctx) => {
-    const router = new Router(provider);
-    const price = await router.getWETHPrice();
-
+    const price = await getETHPrice(provider);
     ctx.sendMessage(`ETH price - ${price.toFixed(2)}`);
 });
 
@@ -66,10 +63,8 @@ bot.hears(address, async (ctx) => {
         return;
     }
 
-    const router = new Router(provider);
-
-    const price = await pool.getPrice(Action.Buy, token);
-    const WETHPrice = await router.getWETHPrice();
+    const tokenPrice = await pool.getPrice(Action.Buy, token);
+    const ETHPrice = await getETHPrice(provider);
 
     const balance = wallet ? await token.getBalance(wallet.address) : 0;
     const marketCap = await token.getMarketCap();
@@ -77,7 +72,7 @@ bot.hears(address, async (ctx) => {
 
     ctx.sendMessage(
         `Token - ${token.symbol} 
-		\n${convertPrice(price * WETHPrice)} USDT/${token.symbol} 
+		\n${convertPrice(tokenPrice * ETHPrice)} USDT/${token.symbol} 
 		\nMCap - ${convertAmount(marketCap)}
 		\nLast Hour - ${volume}
 		\nBalance - ${convertAmount(balance)} ${token.symbol}`
