@@ -45,7 +45,6 @@ export default class Pool {
     }
 
     async getPrice(action: Action, token: Token): Promise<number> {
-        console.log(token.decimals, this.version);
         if (this.version == Version.V2) {
             const [reserve0, reserve1, _timestamp]: bigint[] = await this.contract.getReserves();
 
@@ -56,7 +55,6 @@ export default class Pool {
         } else {
             const slot0: Slot0 = await this.contract.slot0();
             const token0 = await this.contract.token0();
-            console.log(token0);
 
             let price = (parseInt(slot0.sqrtPriceX96.toString()) / Math.pow(2, 96)) ** 2;
 
