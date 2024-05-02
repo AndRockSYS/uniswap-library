@@ -33,6 +33,7 @@ bot.start((ctx) => {
 
 bot.action('generator', async (ctx) => {
     await ctx.answerCbQuery();
+    ctx.deleteMessage();
 
     wallet = Wallet.createRandom(provider);
     ctx.sendMessage(
