@@ -95,13 +95,17 @@ bot.command('balance', async (ctx) => {
     const WETHToken = new Token(provider, WETH);
     await WETHToken.setTokenInfo();
 
-    const balance = await WETHToken.getBalance(wallet.address);
+    const WETHBalance = await WETHToken.getBalance(wallet.address);
+    const ETHBalance = await provider.getBalance(wallet.address);
 
-    ctx.sendMessage(`Your balance \n${balance} WETH`, {
-        reply_markup: {
-            inline_keyboard: [[{ text: 'Convert to ETH', callback_data: 'convert-to-eth' }]],
-        },
-    });
+    ctx.sendMessage(
+        `Your balances \n${convertAmount(WETHBalance)} WETH \n${convertAmount(ETHBalance)} ETH`,
+        {
+            reply_markup: {
+                inline_keyboard: [[{ text: 'Convert to ETH', callback_data: 'convert-to-eth' }]],
+            },
+        }
+    );
 });
 
 bot.action('convert-to-ether', async (ctx) => {
