@@ -16,7 +16,9 @@ export function convertPrice(price: number): string {
         : price.toFixed(4);
 }
 
-export function convertAmount(amount: number): string {
+export function convertAmount(amount: number | bigint): string {
+    amount = Number(amount);
+
     return amount >= 1e9
         ? (amount / 1e9).toFixed(2) + 'B'
         : amount >= 1e6
