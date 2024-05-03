@@ -1,20 +1,29 @@
-import { Contract, Interface, InterfaceAbi, TransactionRequest } from 'ethers';
+import {
+    Contract,
+    HDNodeWallet,
+    Interface,
+    InterfaceAbi,
+    TransactionRequest,
+    Wallet,
+} from 'ethers';
 
-export default async function createTransaction(
+export default async function sendTransaction(
     ABI: InterfaceAbi,
     contract: Contract,
     functionName: string,
     args: any[],
-    from: string
-): Promise<TransactionRequest> {
+    wallet: Wallet | HDNodeWallet
+) {
     const fragment = contract.getFunction(functionName).fragment;
 
     const contractInterface = new Interface(ABI);
     const data = contractInterface.encodeFunctionData(fragment, args);
 
-    return {
-        from,
+    const tx = {
+        from: wallet.address,
         to: await contract.getAddress(),
         data,
     };
+
+    await wallet.sendTransaction(tx);
 }
