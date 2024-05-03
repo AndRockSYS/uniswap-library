@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 
 import Token from 'class/Token';
 import Pool from 'class/Pool';
+import WETHToken from 'class/WETHToken';
 
 import { Action, UserWallet } from 'types';
 
@@ -11,12 +12,12 @@ import { convertPrice, convertAmount, getETHPrice } from 'utils';
 
 import * as buttons from 'telegram/buttons';
 
-import { WETH } from 'addresses';
-
 dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_API as string);
 const provider = new JsonRpcProvider(process.env.INFURA_API);
+
+const WETH = new WETHToken(provider);
 
 let wallet: UserWallet;
 
@@ -109,10 +110,7 @@ bot.command('balance', async (ctx) => {
         return;
     }
 
-    const WETHToken = new Token(provider, WETH);
-    await WETHToken.setTokenInfo();
-
-    const WETHBalance = await WETHToken.getBalance(wallet.address);
+    const WETHBalance = await WETH.getBalance(wallet.address);
     const ETHBalance = await provider.getBalance(wallet.address);
 
     let reply = [];
