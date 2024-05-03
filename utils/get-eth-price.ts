@@ -9,7 +9,7 @@ import { USDT } from 'addresses';
 
 export default async function getETHPrice(provider: JsonRpcProvider): Promise<number> {
     const USDTToken = new Token(provider, USDT);
-    await USDTToken.setTokenInfo();
+    USDTToken.decimals = 6;
 
     const USDTPool = new Pool(provider, USDT);
     await USDTPool.setPoolVersion();
