@@ -1,18 +1,14 @@
-import {
-    Contract,
-    HDNodeWallet,
-    Interface,
-    InterfaceAbi,
-    TransactionRequest,
-    Wallet,
-} from 'ethers';
+import { Contract, ethers, Interface, InterfaceAbi } from 'ethers';
+
+import { UserWallet } from 'types';
 
 export default async function sendTransaction(
     ABI: InterfaceAbi,
     contract: Contract,
     functionName: string,
     args: any[],
-    wallet: Wallet | HDNodeWallet
+    wallet: UserWallet,
+    value?: number
 ) {
     const fragment = contract.getFunction(functionName).fragment;
 
@@ -23,6 +19,7 @@ export default async function sendTransaction(
         from: wallet.address,
         to: await contract.getAddress(),
         data,
+        value: value ? ethers.parseEther(value.toString()) : 0,
     };
 
     await wallet.sendTransaction(tx);

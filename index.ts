@@ -1,11 +1,11 @@
 import { Telegraf } from 'telegraf';
-import { ethers, HDNodeWallet, JsonRpcProvider, Wallet } from 'ethers';
+import { ethers, JsonRpcProvider, Wallet } from 'ethers';
 import dotenv from 'dotenv';
 
 import Token from 'class/Token';
 import Pool from 'class/Pool';
 
-import { Action } from 'types';
+import { Action, UserWallet } from 'types';
 
 import { convertPrice, convertAmount, getETHPrice } from 'utils';
 
@@ -16,7 +16,7 @@ dotenv.config();
 const bot = new Telegraf(process.env.BOT_API as string);
 const provider = new JsonRpcProvider(process.env.INFURA_API);
 
-let wallet: HDNodeWallet | Wallet;
+let wallet: UserWallet;
 
 const privateKey = /(0x.{64})/m;
 const address = /(0x.{40})/gm;

@@ -1,14 +1,6 @@
-import {
-    AddressLike,
-    Contract,
-    ethers,
-    HDNodeWallet,
-    JsonRpcProvider,
-    Wallet,
-    ZeroAddress,
-} from 'ethers';
+import { AddressLike, Contract, ethers, JsonRpcProvider, ZeroAddress } from 'ethers';
 
-import { Version, Action, Slot0 } from 'types';
+import { Version, Action, Slot0, UserWallet } from 'types';
 
 import Token from 'class/Token';
 
@@ -77,7 +69,7 @@ export default class Pool {
         }
     }
 
-    async swap(wallet: HDNodeWallet | Wallet, action: Action, amountIn: bigint, amountOut: bigint) {
+    async swap(wallet: UserWallet, action: Action, amountIn: bigint, amountOut: bigint) {
         const isBuy = action == Action.Buy;
 
         const args =
