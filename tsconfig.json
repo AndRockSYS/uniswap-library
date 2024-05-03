@@ -35,7 +35,8 @@
             "addresses": ["./addresses.json"],
             "class/*": ["./class/*.ts"],
             "utils": ["./utils/index.ts"],
-            "types": ["./types.ts"]
+            "types": ["./types.ts"],
+            "telegram/*": ["./telegram/*.ts"]
         },
         /* Specify a set of entries that re-map imports to additional lookup locations. */
         // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
