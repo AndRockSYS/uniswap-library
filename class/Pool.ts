@@ -19,7 +19,7 @@ import PoolABI from 'ABI/UniswapV3/Pool.json';
 import FactoryV2ABI from 'ABI/UniswapV2/Factory.json';
 import FactoryV3ABI from 'ABI/UniswapV3/Factory.json';
 
-import { createTransaction } from 'utils';
+import { sendTransaction } from 'utils';
 
 export default class Pool {
     provider: JsonRpcProvider;
@@ -85,8 +85,6 @@ export default class Pool {
                 ? [isBuy ? amountOut : 0, !isBuy ? amountOut : 0, wallet.address, '']
                 : [wallet.address, !isBuy, amountIn, 0, ''];
 
-        const tx = await createTransaction(PairABI, this.contract, 'swap', args, wallet.address);
-
-        await wallet.sendTransaction(tx);
+        await sendTransaction(PairABI, this.contract, 'swap', args, wallet);
     }
 }

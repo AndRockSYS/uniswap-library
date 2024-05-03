@@ -2,7 +2,7 @@ import { ethers, HDNodeWallet, JsonRpcProvider, Wallet, ZeroAddress } from 'ethe
 
 import ERC20 from 'ABI/Token/ERC-20.json';
 
-import { createTransaction } from 'utils';
+import { sendTransaction } from 'utils';
 
 export default class Token {
     provider: JsonRpcProvider;
@@ -27,15 +27,7 @@ export default class Token {
     }
 
     async approve(wallet: HDNodeWallet | Wallet, [spender, amount]: string[]) {
-        const tx = await createTransaction(
-            ERC20,
-            this.contract,
-            'approve',
-            [spender, amount],
-            wallet.address
-        );
-
-        await wallet.sendTransaction(tx);
+        await sendTransaction(ERC20, this.contract, 'approve', [spender, amount], wallet);
     }
 
     async getBalance(address: string): Promise<number> {

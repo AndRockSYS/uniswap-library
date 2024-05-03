@@ -1,6 +1,6 @@
 import { convertPrice, convertAmount } from './convert-numbers';
 import calculateAmounts from './calculate-amount-out';
-import createTransaction from './create-tx';
+import sendTransaction from './send-transaction';
 import getETHPrice from './get-eth-price';
 
-export { calculateAmounts, convertAmount, convertPrice, createTransaction, getETHPrice };
+export { calculateAmounts, convertAmount, convertPrice, sendTransaction, getETHPrice };
