@@ -1,4 +1,5 @@
 import Token from 'class/Token';
+import { HDNodeWallet, Wallet } from 'ethers';
 
 enum Version {
     V2,
@@ -37,4 +38,6 @@ type Slot0 = {
     unlocked: boolean;
 };
 
-export { Action, Version, SwapRequest, ExactInputSingleParams, Slot0 };
+type UserWallet = Wallet | HDNodeWallet;
+
+export { Action, Version, SwapRequest, ExactInputSingleParams, Slot0, UserWallet };
