@@ -8,7 +8,7 @@ import WETHToken from 'class/WETHToken';
 
 import { Action, UserWallet } from 'types';
 
-import { convertPrice, convertAmount, getETHPrice } from 'utils';
+import { convertPrice, convertAmount, getETHPrice, getETHBalance } from 'utils';
 
 import * as buttons from 'telegram/buttons';
 
@@ -35,7 +35,6 @@ bot.start((ctx) => {
 });
 
 bot.action('generator', async (ctx) => {
-    await ctx.answerCbQuery();
     ctx.deleteMessage();
 
     wallet = Wallet.createRandom(provider);
@@ -70,7 +69,7 @@ bot.hears(address, async (ctx) => {
     const balance = wallet ? await token.getBalance(wallet.address) : 0;
     const marketCap = await token.getMarketCap();
 
-    const walletBalance = wallet ? Number(await provider.getBalance(wallet.address)) : 0;
+    const walletBalance = wallet ? await getETHBalance(provider, wallet.address) : 0;
 
     ctx.sendMessage(
         `Token - ${token.symbol} 
@@ -111,24 +110,32 @@ bot.command('balance', async (ctx) => {
     }
 
     const WETHBalance = await WETH.getBalance(wallet.address);
-    const ETHBalance = await provider.getBalance(wallet.address);
+    const ETHBalance = await getETHBalance(provider, wallet.address);
 
     let reply = [];
 
-    if (ETHBalance > 0) reply.push(buttons.depositETH);
-    if (WETHBalance > 0) reply.push(buttons.withdrawWETH);
+    if (ETHBalance == 0) reply.push([buttons.depositETH]);
+    if (WETHBalance == 0) reply.push([buttons.withdrawWETH]);
 
     ctx.sendMessage(
         `Your balances \n${convertAmount(WETHBalance)} WETH \n${convertAmount(ETHBalance)} ETH`,
         {
             reply_markup: {
-                inline_keyboard: [reply],
+                inline_keyboard: reply,
             },
         }
     );
 });
 
 bot.action('withdraw-weth', async (ctx) => {
+    await ctx.answerCbQuery();
+
+    ctx.sendMessage('Enter the amount you want to withdraw', {
+        reply_markup: {
+            force_reply: true,
+            input_field_placeholder: 'Amount',
+        },
+    });
     //todo add convert to ether to the address
 });
 
