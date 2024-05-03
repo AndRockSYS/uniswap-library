@@ -9,6 +9,8 @@ import { Action, UserWallet } from 'types';
 
 import { convertPrice, convertAmount, getETHPrice } from 'utils';
 
+import * as buttons from 'telegram/buttons';
+
 import { WETH } from 'addresses';
 
 dotenv.config();
@@ -21,12 +23,12 @@ let wallet: UserWallet;
 const privateKey = /(0x.{64})/m;
 const address = /(0x.{40})/gm;
 
-// todo: check approve, check swap
+// todo: check approve, check swap, deposit eth, withdraw weth
 
 bot.start((ctx) => {
     ctx.sendMessage('Welcome to the trading bot! \nProvide a private key or generate a new one.', {
         reply_markup: {
-            inline_keyboard: [[{ text: 'Create new wallet', callback_data: 'generator' }]],
+            inline_keyboard: [[buttons.generateWallet]],
         },
     });
 });
@@ -66,7 +68,6 @@ bot.hears(address, async (ctx) => {
 
     const balance = wallet ? await token.getBalance(wallet.address) : 0;
     const marketCap = await token.getMarketCap();
-    const volume = await token.getVolumeLastHour();
 
     const walletBalance = wallet ? Number(await provider.getBalance(wallet.address)) : 0;
 
@@ -74,15 +75,14 @@ bot.hears(address, async (ctx) => {
         `Token - ${token.symbol} 
 		\n${convertPrice(tokenPrice * ETHPrice)} USDT/${token.symbol} 
 		\nMCap - ${convertAmount(marketCap)}
-		\nLast Hour - ${volume}
 		\nBalance - ${convertAmount(balance)} ${token.symbol}
 		${walletBalance > 0 ? '' : '\nFund your wallet to Buy / Sell tokens'}`,
         walletBalance > 0
             ? {
                   reply_markup: {
                       inline_keyboard: [
-                          [{ text: 'Buy', callback_data: 'buy' }],
-                          balance > 0 ? [{ text: 'Sell', callback_data: 'sell' }] : [],
+                          [buttons.buyTokens],
+                          balance > 0 ? [buttons.sellTokens] : [],
                       ],
                   },
               }
@@ -103,7 +103,7 @@ bot.command('balance', async (ctx) => {
     if (!wallet) {
         ctx.sendMessage(`You dont have an account`, {
             reply_markup: {
-                inline_keyboard: [[{ text: 'Create new wallet', callback_data: 'generator' }]],
+                inline_keyboard: [[buttons.generateWallet]],
             },
         });
         return;
@@ -115,18 +115,27 @@ bot.command('balance', async (ctx) => {
     const WETHBalance = await WETHToken.getBalance(wallet.address);
     const ETHBalance = await provider.getBalance(wallet.address);
 
+    let reply = [];
+
+    if (ETHBalance > 0) reply.push(buttons.depositETH);
+    if (WETHBalance > 0) reply.push(buttons.withdrawWETH);
+
     ctx.sendMessage(
         `Your balances \n${convertAmount(WETHBalance)} WETH \n${convertAmount(ETHBalance)} ETH`,
         {
             reply_markup: {
-                inline_keyboard: [[{ text: 'Convert to ETH', callback_data: 'convert-to-eth' }]],
+                inline_keyboard: [reply],
             },
         }
     );
 });
 
-bot.action('convert-to-ether', async (ctx) => {
+bot.action('withdraw-weth', async (ctx) => {
     //todo add convert to ether to the address
+});
+
+bot.action('deposit-eth', async (ctx) => {
+    //todo add convert from eth to weth to the address
 });
 
 bot.catch((err, ctx) => {
