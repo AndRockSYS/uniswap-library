@@ -18,15 +18,16 @@ export default class WETHToken extends Token {
     }
 
     async deposit(wallet: UserWallet, amount: number) {
+        await sendTransaction(WETHTokenABI, this.contract, 'deposit', [], wallet, amount);
+    }
+
+    async withdraw(wallet: UserWallet, amount: number) {
         await sendTransaction(
             WETHTokenABI,
             this.contract,
             'withdraw',
             [ethers.parseEther(amount.toString())],
-            wallet,
-            amount
+            wallet
         );
     }
-
-    async withdraw(amount: number) {}
 }
