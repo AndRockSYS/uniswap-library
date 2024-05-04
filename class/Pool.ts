@@ -1,6 +1,6 @@
 import { AddressLike, Contract, ethers, JsonRpcProvider, ZeroAddress } from 'ethers';
 
-import { Version, Action, Slot0, UserWallet } from 'types';
+import { Version, Action, Slot0, UserWallet, SwapRequest } from 'types';
 
 import Token from 'class/Token';
 
@@ -11,7 +11,7 @@ import PoolABI from 'ABI/UniswapV3/Pool.json';
 import FactoryV2ABI from 'ABI/UniswapV2/Factory.json';
 import FactoryV3ABI from 'ABI/UniswapV3/Factory.json';
 
-import { sendTransaction } from 'utils';
+import { sendTransaction, calculateAmounts } from 'utils';
 
 export default class Pool {
     provider: JsonRpcProvider;
@@ -69,8 +69,11 @@ export default class Pool {
         }
     }
 
-    async swap(wallet: UserWallet, action: Action, amountIn: bigint, amountOut: bigint) {
-        const isBuy = action == Action.Buy;
+    async swap(wallet: UserWallet, request: SwapRequest) {
+        const price = await this.getPrice(request.action, request.token);
+        const [amountIn, amountOut] = calculateAmounts(request, price);
+
+        const isBuy = request.action == Action.Buy;
 
         const args =
             this.version == Version.V2
