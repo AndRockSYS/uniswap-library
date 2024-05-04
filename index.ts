@@ -23,7 +23,7 @@ let wallet: UserWallet;
 
 const privateKey = /(0x.{64})/m;
 const address = /(0x.{40})/gm;
-const percentageCallbackKeyboard = /(WETH-\S+)|(ETH-\S+)|(0x.{40}-\S+)/gm;
+const percentageCallbackKeyboard = /(WETH \S+)|(ETH \S+)|(0x.{40} \S+)/gm;
 
 // todo: check approve, check swap, deposit eth, withdraw weth
 
@@ -128,11 +128,12 @@ bot.action(['withdraw-weth', 'deposit-eth'], async (ctx) => {
     await ctx.answerCbQuery();
 
     const isToETH = ctx.match[0].includes('withdraw');
-    const msg = isToETH ? 'ETH' : 'WETH';
+    const symbol = isToETH ? 'ETH' : 'WETH';
+    console.log(symbol);
 
-    ctx.sendMessage(`Which amount you want to convert to ${msg}`, {
+    ctx.sendMessage(`Which amount you want to convert to ${symbol}`, {
         reply_markup: {
-            inline_keyboard: buttons.getPercentageKeyboard(msg),
+            inline_keyboard: buttons.getPercentageKeyboard(symbol),
         },
     });
 });
@@ -140,7 +141,7 @@ bot.action(['withdraw-weth', 'deposit-eth'], async (ctx) => {
 bot.action(percentageCallbackKeyboard, async (ctx) => {
     await ctx.answerCbQuery();
 
-    console.log(ctx.callbackQuery);
+    console.log(ctx.match[0]);
 });
 
 bot.catch((err, ctx) => {

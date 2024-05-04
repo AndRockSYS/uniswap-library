@@ -12,12 +12,12 @@ function getPercentageKeyboard(addressOrSymbol: string): {
 }[][] {
     return [
         [
-            { text: '25%', callback_data: `${addressOrSymbol}-0.25` },
-            { text: '50%', callback_data: `${addressOrSymbol}-0.75` },
+            { text: '25%', callback_data: `${addressOrSymbol} 0.25` },
+            { text: '50%', callback_data: `${addressOrSymbol} 0.5` },
         ],
         [
-            { text: '75%', callback_data: `${addressOrSymbol}-0.5` },
-            { text: '100%', callback_data: `${addressOrSymbol}-1` },
+            { text: '75%', callback_data: `${addressOrSymbol} 0.75` },
+            { text: '100%', callback_data: `${addressOrSymbol} 1` },
         ],
     ];
 }
