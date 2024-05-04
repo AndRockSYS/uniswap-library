@@ -116,9 +116,9 @@ bot.command('balance', async (ctx) => {
     const ETHBalance = await getETHBalance(provider, wallet.address);
 
     let reply = [];
-    //! only for tests
-    if (ETHBalance == 0) reply.push([buttons.depositETH]);
-    if (WETHBalance == 0) reply.push([buttons.withdrawWETH]);
+
+    if (ETHBalance > 0) reply.push([buttons.depositETH]);
+    if (WETHBalance > 0) reply.push([buttons.withdrawWETH]);
 
     ctx.sendMessage(
         `Your balances \n${convertAmount(WETHBalance)} WETH \n${convertAmount(ETHBalance)} ETH`,
