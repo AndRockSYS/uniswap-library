@@ -6,7 +6,7 @@ import Token from 'class/Token';
 import Pool from 'class/Pool';
 import WETHToken from 'class/WETHToken';
 
-import { Action, UserWallet } from 'types';
+import { Action, SwapRequest, UserWallet } from 'types';
 
 import { convertPrice, convertAmount, getETHPrice, getETHBalance } from 'utils';
 
@@ -23,7 +23,7 @@ let wallet: UserWallet;
 
 const privateKey = /(0x.{64})/m;
 const address = /(0x.{40})/gm;
-const percentageCallbackKeyboard = /(WETH \S+)|(ETH \S+)|(0x.{40} \S+)/gm;
+const percentageCallbackKeyboard = /(WETH \S+)|(ETH \S+)|(0x.{40} \S+ \w+)/gm;
 
 // todo: check approve, check swap, deposit eth, withdraw weth
 
@@ -93,7 +93,13 @@ bot.hears(address, async (ctx) => {
 });
 
 bot.action(['buy', 'sell'], async (ctx) => {
-    //todo add buy / sell specific amount of tokens
+    const action = ctx.match[0];
+
+    ctx.sendMessage(`Which amount of token you would like to ${action}`, {
+        reply_markup: {
+            inline_keyboard: buttons.getPercentageKeyboard(action),
+        },
+    });
 });
 
 bot.command('balance', async (ctx) => {
@@ -129,7 +135,6 @@ bot.action(['withdraw-weth', 'deposit-eth'], async (ctx) => {
 
     const isToETH = ctx.match[0].includes('withdraw');
     const symbol = isToETH ? 'ETH' : 'WETH';
-    console.log(symbol);
 
     ctx.sendMessage(`Which amount you want to convert to ${symbol}`, {
         reply_markup: {
@@ -141,7 +146,31 @@ bot.action(['withdraw-weth', 'deposit-eth'], async (ctx) => {
 bot.action(percentageCallbackKeyboard, async (ctx) => {
     await ctx.answerCbQuery();
 
-    console.log(ctx.match[0]);
+    const args = ctx.match[0].split(' ');
+    const [symbolOrAddress, percentage] = args;
+
+    if (symbolOrAddress == 'ETH') {
+        const WETHBalance = await WETH.getBalance(wallet.address);
+        await WETH.withdraw(wallet, WETHBalance * parseFloat(percentage));
+    } else if (symbolOrAddress == 'WETH') {
+        const ETHBalance = await getETHBalance(provider, wallet.address);
+        await WETH.deposit(wallet, ETHBalance * parseFloat(percentage));
+    } else {
+        const token = new Token(provider, symbolOrAddress);
+        await token.setTokenInfo();
+
+        const pool = new Pool(provider, symbolOrAddress);
+        await pool.setPoolVersion();
+
+        const tokenBalance = await token.getBalance(wallet.address);
+
+        const request: SwapRequest = {
+            action: args[2] == 'buy' ? Action.Buy : Action.Sell,
+            amountIn: tokenBalance * parseFloat(percentage),
+            token,
+        };
+        pool.swap(wallet, request);
+    }
 });
 
 bot.catch((err, ctx) => {
