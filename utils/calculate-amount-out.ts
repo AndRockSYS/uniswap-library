@@ -1,21 +1,17 @@
 import { SwapRequest, Action } from 'types';
 
-import Pool from 'class/Pool';
-
-export default async function calculateAmounts(
+export default function calculateAmounts(
     { action, amountIn, token }: SwapRequest,
-    pool: Pool
-): Promise<string[]> {
-    const price = await pool.getPrice(action, token);
+    price: number
+): bigint[] {
     let amountOut = amountIn * price;
 
     const decimalsIn = action == Action.Buy ? 18 : token.decimals;
     const decimalsOut = action == Action.Sell ? 18 : token.decimals;
 
-    return [toFullLength(amountIn, decimalsIn), toFullLength(amountOut, decimalsOut)];
+    return [toBigInt(amountIn, decimalsIn), toBigInt(amountOut, decimalsOut)];
 }
 
-function toFullLength(amountIn: number, decimals: number): string {
-    const amount = Math.floor(amountIn * 10 ** decimals);
-    return amount.toLocaleString('fullwide', { useGrouping: false });
+function toBigInt(amountIn: number, decimals: number): bigint {
+    return BigInt(amountIn * 10 ** decimals);
 }
