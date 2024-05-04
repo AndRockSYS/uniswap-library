@@ -23,6 +23,7 @@ let wallet: UserWallet;
 
 const privateKey = /(0x.{64})/m;
 const address = /(0x.{40})/gm;
+const percentageCallbackKeyboard = /(WETH-\S+)|(ETH-\S+)|(0x.{40}-\S+)/gm;
 
 // todo: check approve, check swap, deposit eth, withdraw weth
 
@@ -36,6 +37,7 @@ bot.start((ctx) => {
 
 bot.action('generator', async (ctx) => {
     ctx.deleteMessage();
+    if (wallet) return;
 
     wallet = Wallet.createRandom(provider);
     ctx.sendMessage(
@@ -45,7 +47,7 @@ bot.action('generator', async (ctx) => {
 });
 
 bot.hears(privateKey, async (ctx) => {
-    if (!wallet) return;
+    if (wallet) return;
 
     wallet = new Wallet(ctx.message.text, provider);
     ctx.sendMessage(`Your Address: \n\`${wallet.address}\``, { parse_mode: 'MarkdownV2' });
@@ -94,11 +96,6 @@ bot.action(['buy', 'sell'], async (ctx) => {
     //todo add buy / sell specific amount of tokens
 });
 
-bot.command('ether', async (ctx) => {
-    const price = await getETHPrice(provider);
-    ctx.sendMessage(`ETH price - ${price.toFixed(2)}`);
-});
-
 bot.command('balance', async (ctx) => {
     if (!wallet) {
         ctx.sendMessage(`You dont have an account`, {
@@ -113,7 +110,7 @@ bot.command('balance', async (ctx) => {
     const ETHBalance = await getETHBalance(provider, wallet.address);
 
     let reply = [];
-
+    //! only for tests
     if (ETHBalance == 0) reply.push([buttons.depositETH]);
     if (WETHBalance == 0) reply.push([buttons.withdrawWETH]);
 
@@ -127,20 +124,23 @@ bot.command('balance', async (ctx) => {
     );
 });
 
-bot.action('withdraw-weth', async (ctx) => {
+bot.action(['withdraw-weth', 'deposit-eth'], async (ctx) => {
     await ctx.answerCbQuery();
 
-    ctx.sendMessage('Enter the amount you want to withdraw', {
+    const isToETH = ctx.match[0].includes('withdraw');
+    const msg = isToETH ? 'ETH' : 'WETH';
+
+    ctx.sendMessage(`Which amount you want to convert to ${msg}`, {
         reply_markup: {
-            force_reply: true,
-            input_field_placeholder: 'Amount',
+            inline_keyboard: buttons.getPercentageKeyboard(msg),
         },
     });
-    //todo add convert to ether to the address
 });
 
-bot.action('deposit-eth', async (ctx) => {
-    //todo add convert from eth to weth to the address
+bot.action(percentageCallbackKeyboard, async (ctx) => {
+    await ctx.answerCbQuery();
+
+    console.log(ctx.callbackQuery);
 });
 
 bot.catch((err, ctx) => {
